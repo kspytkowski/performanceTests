@@ -1,4 +1,4 @@
-
+package tests
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
@@ -11,7 +11,7 @@ class LogInLogOutTest extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .acceptLanguageHeader("en-US,en;q=0.5")
     .userAgentHeader("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0")
-//    .extraInfoExtractor(extraInfo => List(extraInfo.request, extraInfo.response, extraInfo.session, extraInfo.response.body.string))
+    .extraInfoExtractor(extraInfo => List(extraInfo.request, extraInfo.response, extraInfo.session, extraInfo.response.body.string))
 
   val headers1 = Map("Upgrade-Insecure-Requests" -> "1")
 
@@ -60,5 +60,7 @@ class LogInLogOutTest extends Simulation {
         .headers(headers2)
         .body(RawFileBody("LogInLogOutTest_0011_request.txt"))))
 
-  setUp(scn.inject(atOnceUsers(100))).protocols(httpProtocol)
+  val scn2 = scenario("LOL").exec(HomePageGet.homePageGetScn, LogInPageGet.logInPageGet)
+
+  setUp(scn2.inject(atOnceUsers(1))).protocols(httpProtocol);//scn.inject(atOnceUsers(200))).protocols(httpProtocol)
 }
