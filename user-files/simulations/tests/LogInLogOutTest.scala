@@ -16,5 +16,16 @@ class LogInLogOutTest extends Simulation {
       Commons.logOutGetWithParameter
     )
 
+  val scn2 = scenario("LogInLogOutTest")
+    .exec(Commons.homePageGet)
+    .exec(pause(2))
+    .exec(Commons.logInPageGet)
+    .exec(pause(2))
+    .exec(Commons.logInPost)
+    .exec(pause(2))
+    .exec(Commons.logOutGetWithParameter)
+
+  //difference between scn and scn2??
+
   setUp(scn.inject(atOnceUsers(Commons.numberOfUsers))).protocols(Commons.httpProtocol)
 }
