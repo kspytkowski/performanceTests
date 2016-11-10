@@ -6,7 +6,7 @@ import Headers._
 
 object HomePageGet {
 
-  val homePageGetScn = exec(http("HomePageGetRQ")
+  val homePageGet = exec(http("HomePageGetRQ")
     .get("/")
     .headers(headers1)
     .check(status.is(200))
