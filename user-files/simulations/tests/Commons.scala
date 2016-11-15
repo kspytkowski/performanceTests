@@ -5,12 +5,18 @@ import io.gatling.http.Predef._
 
 object Commons {
 
+  val successStatus: Int = 200
+
   val headers1 = Map("Upgrade-Insecure-Requests" -> "1")
 
   val headers2 = Map(
     "Accept" -> "application/json, text/javascript, */*; q=0.01",
     "Content-Type" -> "application/json",
     "X-Requested-With" -> "XMLHttpRequest")
+
+  val headers3 = Map(
+    "Accept" -> "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Upgrade-Insecure-Requests" -> "1")
 
   val httpProtocol = http
     .baseURL("http://localhost:8080")
@@ -24,7 +30,7 @@ object Commons {
   val homePageGet = exec(http("HomePageGetRQ")
     .get("/")
     .headers(headers1)
-    .check(status.is(200))
+    .check(status.is(successStatus)) //add this check to all execs
     .check(regex(""","sesskey":"(..........)",""").saveAs("SESSKEY"))
     .resources(http("SessionKeyPostRQ")
       .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
@@ -53,12 +59,29 @@ object Commons {
   val logOutGetWithParameter = exec(http("LogOutGetWithParameterRQ")
     .get("/login/logout.php?sesskey=${SESSKEY}")
     .headers(headers1)
-    .check(status.is(200))
-    .check(regex(""","sesskey":"(..........)",""").saveAs("SESSKEYNEW"))
+    .check(status.is(successStatus))
+    .check(regex(""","sesskey":"(..........)",""").saveAs("SESSKEY"))
     .resources(http("SessionKeyPostRQ")
-      .post("/lib/ajax/service.php?sesskey=${SESSKEYNEW}")
+      .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
       .headers(headers2)
       .body(RawFileBody("RequestExtra1.txt"))))
+
+
+  val availableCoursesPageGet = exec(http("AvailableCoursesPageGetRQ")
+      .get("/?redirect=0")
+      .headers(headers3)
+      .resources(http("SessionKeyPostRQ")
+        .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+        .headers(headers2)
+        .body(RawFileBody("RequestExtra4.txt"))))
+
+   val filterSettingsPageGet = exec(http("FilterSettingsPageGetRQ")
+      .get("/filter/manage.php?contextid=2")
+      .headers(headers3)
+      .resources(http("SessionKeyPostRQ")
+        .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+        .headers(headers2)
+        .body(RawFileBody("RequestExtra5.txt"))))
 
   val numberOfUsers = 2;
 }
