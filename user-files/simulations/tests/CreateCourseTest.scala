@@ -6,9 +6,9 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import io.gatling.jdbc.Predef._
 
-class RandomClickTest extends Simulation {
+class CreateCourseTest extends Simulation {
 
-  val scn = scenario("RandomClickTest")
+  val scn = scenario("CreateCourseTest")
     .exec(
       Commons.homePageGet,
       pause(2),
@@ -16,11 +16,12 @@ class RandomClickTest extends Simulation {
       pause(2),
       Commons.logInPost,
       pause(2),
-      Commons.availableCoursesPageGet,
-
-      //add more
-
+      Commons.coursePageGet,
       pause(2),
+      Commons.addNewCoursePageGet,
+      pause(20),
+      Commons.createCoursePost,
+      pause(20),
       Commons.logOutGetWithParameter
     )
 
