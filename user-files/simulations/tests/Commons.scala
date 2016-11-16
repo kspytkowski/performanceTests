@@ -22,6 +22,10 @@ object Commons {
     "Content-Type" -> "application/x-www-form-urlencoded; charset=UTF-8",
     "X-Requested-With" -> "XMLHttpRequest")
 
+  val headers5 = Map(
+    "Content-Type" -> "application/json",
+    "X-Requested-With" -> "XMLHttpRequest")
+
   val httpProtocol = http
     .baseURL("http://localhost:8080")
     .inferHtmlResources(BlackList(""".*\.js""", """.*\.css""", """.*\.gif""", """.*\.jpeg""", """.*\.jpg""", """.*\.ico""", """.*\.woff""", """.*\.(t|o)tf""", """.*\.png"""), WhiteList())
@@ -29,7 +33,7 @@ object Commons {
     .acceptEncodingHeader("gzip, deflate")
     .acceptLanguageHeader("en-US,en;q=0.5")
     .userAgentHeader("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0")
-  //    .extraInfoExtractor(extraInfo => List(extraInfo.request, extraInfo.response, extraInfo.session, extraInfo.response.body.string))
+//    .extraInfoExtractor(extraInfo => List(extraInfo.request, extraInfo.response, extraInfo.session, extraInfo.response.body.string))
 
   val homePageGet = exec(http("HomePageGetRQ")
     .get("/")
@@ -60,6 +64,20 @@ object Commons {
       .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
       .headers(headers2)
       .body(RawFileBody("RequestExtra3.txt"))))
+
+  val logInToManageCoursesPost = exec(http("LogInToManageCoursesPostRQ")
+    .post("/login/index.php")
+    .headers(headers1)
+    .check(regex(""","sesskey":"(..........)",""").saveAs("SESSKEY"))
+    .check(regex(""","sesskey":"(..........)",""").saveAs("COURSE_NAME"))
+    .formParam("username", "admin")
+    .formParam("password", "adminM1!")
+    .formParam("anchor", "")
+    .resources(http("SessionKeyPostRQ")
+      .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+      .headers(headers2)
+      .body(RawFileBody("RequestExtra3.txt"))))
+
 
   val logOutGetWithParameter = exec(http("LogOutGetWithParameterRQ")
     .get("/login/logout.php?sesskey=${SESSKEY}")
@@ -174,5 +192,50 @@ object Commons {
     .formParam("tags", "_qf__force_multiselect_submission")
     .formParam("saveanddisplay", "Save and display"))
 
-  val numberOfUsers = 2;
+  val getSiteAdminBranchPost = exec(http("GetSiteAdminBranchPostRQ")
+    .post("/lib/ajax/getsiteadminbranch.php")
+    .headers(headers4)
+    .formParam("type", "71")
+    .formParam("sesskey", "${SESSKEY}"))
+
+  val managementPageGet = exec(http("ManagementPageGetRQ")
+    .get("/course/management.php")
+    .headers(headers3)
+    .check(regex("""title="${COURSE_NAME}" href="http://localhost:8080/course/view.php\?id=(.*)">${COURSE_NAME}""").saveAs("COURSE_ID")) //TODO
+    //${COURSE_NAME} is a session key which was used for creation of this course...
+    //${COURSE_ID} is an interior moodle database course id (different than course id assigned by used while creating a course)
+    .resources(http("SessionKeyPostRQ")
+    .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+    .headers(headers5)
+    .body(RawFileBody("RequestExtra4.txt"))))
+
+  val confirmationBeforeCourseDeleteGet = exec(http("ConfirmationBeforeCourseDeleteGetRQ")
+    .get("/course/delete.php?id=${COURSE_ID}") //TODO
+    .headers(headers3)
+    .check(regex("""<input type="hidden" name="delete" value="(.*)" /><input type="hidden" name="sesskey"""").saveAs("COURSE_DELETE_HASH")) //TODO
+    .resources(http("SessionKeyPostRQ")
+    .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+    .headers(headers5)
+    .body(RawFileBody("RequestExtra4.txt"))))
+
+  val deleteCoursePost = exec(http("DeleteCoursePostRQ")
+    .post("/course/delete.php")
+    .headers(headers3)
+    .formParam("id", "${COURSE_ID}") //TODO
+    .formParam("delete", "${COURSE_DELETE_HASH}") //TODO
+    .formParam("sesskey", "${SESSKEY}")
+    .resources(http("SessionKeyPostRQ")
+      .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+      .headers(headers5)
+      .body(RawFileBody("RequestExtra4.txt"))))
+
+  val managementPageRedirectGet = exec(http("ManagementPageRedirectGetRQ")
+    .get("/course/management.php?categoryid=1")
+    .headers(headers3)
+    .resources(http("SessionKeyPostRQ")
+      .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+      .headers(headers5)
+      .body(RawFileBody("RequestExtra4.txt"))))
+
+  val numberOfUsers = 1;
 }
