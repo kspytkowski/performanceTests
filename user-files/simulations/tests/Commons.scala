@@ -26,6 +26,8 @@ object Commons {
     "Content-Type" -> "application/json",
     "X-Requested-With" -> "XMLHttpRequest")
 
+  val headers6 = Map("Upgrade-Insecure-Requests" -> "1")
+
   val httpProtocol = http
     .baseURL("http://localhost:8080")
     .inferHtmlResources(BlackList(""".*\.js""", """.*\.css""", """.*\.gif""", """.*\.jpeg""", """.*\.jpg""", """.*\.ico""", """.*\.woff""", """.*\.(t|o)tf""", """.*\.png"""), WhiteList())
@@ -236,6 +238,64 @@ object Commons {
       .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
       .headers(headers5)
       .body(RawFileBody("RequestExtra4.txt"))))
+
+  val editCoursePageGet = exec(http("EditCoursePageGetRQ")
+    .get("/course/edit.php?id=${COURSE_ID}&returnto=catmanage")
+    .headers(headers6))
+
+  val editCoursePost = exec(http("EditCoursePostRQ")
+    .post("/course/edit.php")
+    .headers(headers1)
+    .formParam("returnto", "catmanage")
+    .formParam("returnurl", "http://localhost:8080/course/management.php?categoryid=0")
+    .formParam("mform_isexpanded_id_descriptionhdr", "1")
+    .formParam("addcourseformatoptionshere", "")
+    .formParam("id", "${COURSE_ID}") //TODO
+    .formParam("sesskey", "${SESSKEY}") //TODO
+    .formParam("_qf__course_edit_form", "1")
+    .formParam("mform_isexpanded_id_general", "1")
+    .formParam("mform_isexpanded_id_courseformathdr", "0")
+    .formParam("mform_isexpanded_id_appearancehdr", "0")
+    .formParam("mform_isexpanded_id_filehdr", "0")
+    .formParam("mform_isexpanded_id_completionhdr", "0")
+    .formParam("mform_isexpanded_id_groups", "0")
+    .formParam("mform_isexpanded_id_rolerenaming", "0")
+    .formParam("mform_isexpanded_id_tagshdr", "0")
+    .formParam("fullname", "${SESSKEY}") //TODO
+    .formParam("shortname", "${SESSKEY}NEWSHORTNAME") //TODO
+    .formParam("category", "1")
+    .formParam("visible", "1")
+    .formParam("startdate[day]", "1") //TODO
+    .formParam("startdate[month]", "1") //TODO
+    .formParam("startdate[year]", "2017") //TODO
+    .formParam("idnumber", "${SESSKEY}") //TODO
+    .formParam("summary_editor[text]", "<p>NewCourseSummary<br></p>") //TODO
+    .formParam("summary_editor[format]", "1")
+    .formParam("summary_editor[itemid]", "1")
+    .formParam("overviewfiles_filemanager", "1")
+    .formParam("format", "weeks")
+    .formParam("numsections", "12")
+    .formParam("hiddensections", "0")
+    .formParam("coursedisplay", "0")
+    .formParam("lang", "")
+    .formParam("newsitems", "5")
+    .formParam("showgrades", "1")
+    .formParam("showreports", "0")
+    .formParam("maxbytes", "0")
+    .formParam("enablecompletion", "0")
+    .formParam("groupmode", "0")
+    .formParam("groupmodeforce", "0")
+    .formParam("defaultgroupingid", "0")
+    .formParam("role_1", "")
+    .formParam("role_2", "")
+    .formParam("role_3", "")
+    .formParam("role_4", "")
+    .formParam("role_5", "")
+    .formParam("role_6", "")
+    .formParam("role_7", "")
+    .formParam("role_8", "")
+    .formParam("tags", "_qf__force_multiselect_submission")
+    .formParam("saveandreturn", "Save and return"))
 
   val numberOfUsers = 1;
 }
