@@ -8,12 +8,21 @@ import io.gatling.jdbc.Predef._
 
 class CompleteQuizTest extends Simulation {
 
-	val headers_0 = Map("Upgrade-Insecure-Requests" -> "1")
+	val headersFirstQuestion = Map(
+		"Content-Type" -> "multipart/form-data; boundary=---------------------------23874327418345425662108952501",
+		"Upgrade-Insecure-Requests" -> "1")
 
-	val headers_1 = Map(
-		"Accept" -> "application/json, text/javascript, */*; q=0.01",
-		"Content-Type" -> "application/json",
-		"X-Requested-With" -> "XMLHttpRequest")
+	val headersSecondQuestion = Map(
+		"Content-Type" -> "multipart/form-data; boundary=---------------------------8995734713942129141733338246",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headersThirdQuestion = Map(
+		"Content-Type" -> "multipart/form-data; boundary=---------------------------4943517595834122041069809851",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headersFourthQuestion = Map(
+		"Content-Type" -> "multipart/form-data; boundary=---------------------------686099722714968618186152106",
+		"Upgrade-Insecure-Requests" -> "1")
 
 	val scn = scenario("CompleteQuizTest")
 	.feed(csv("studentsData.csv"))
@@ -30,13 +39,13 @@ class CompleteQuizTest extends Simulation {
 		pause(2),
 		Commons.startQuiz("2"),
 		pause(2),
-		Commons.answerQuestion("CompleteQuizTest_FirstQuestion.txt", Commons.headersFirstQuestion),
+		Commons.answerQuestion("CompleteQuizTest_FirstQuestion.txt", headersFirstQuestion),
 		pause(2),
-		Commons.answerQuestion("CompleteQuizTest_SecondQuestion.txt", Commons.headersSecondQuestion),
+		Commons.answerQuestion("CompleteQuizTest_SecondQuestion.txt", headersSecondQuestion),
 		pause(2),
-		Commons.answerQuestion("CompleteQuizTest_ThirdQuestion.txt", Commons.headersThirdQuestion),
+		Commons.answerQuestion("CompleteQuizTest_ThirdQuestion.txt", headersThirdQuestion),
 		pause(2),
-		Commons.answerQuestion("CompleteQuizTest_FourthQuestion.txt", Commons.headersFourthQuestion),
+		Commons.answerQuestion("CompleteQuizTest_FourthQuestion.txt", headersFourthQuestion),
 		pause(2),
 		Commons.endQuiz(),
 		pause(2),

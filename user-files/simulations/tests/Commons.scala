@@ -36,22 +36,6 @@ object Commons {
 
   val headers6 = Map("Upgrade-Insecure-Requests" -> "1")
 
-  val headersFirstQuestion = Map(
-		"Content-Type" -> "multipart/form-data; boundary=---------------------------23874327418345425662108952501",
-		"Upgrade-Insecure-Requests" -> "1")
-
-	val headersSecondQuestion = Map(
-		"Content-Type" -> "multipart/form-data; boundary=---------------------------8995734713942129141733338246",
-		"Upgrade-Insecure-Requests" -> "1")
-
-	val headersThirdQuestion = Map(
-		"Content-Type" -> "multipart/form-data; boundary=---------------------------4943517595834122041069809851",
-		"Upgrade-Insecure-Requests" -> "1")
-
-	val headersFourthQuestion = Map(
-		"Content-Type" -> "multipart/form-data; boundary=---------------------------686099722714968618186152106",
-		"Upgrade-Insecure-Requests" -> "1")
-
   val httpProtocol = http
     .baseURL(MOODLE_URL)
     .inferHtmlResources(BlackList(""".*\.js""", """.*\.css""", """.*\.gif""", """.*\.jpeg""", """.*\.jpg""", """.*\.ico""", """.*\.woff""", """.*\.(t|o)tf""", """.*\.png"""), WhiteList())
