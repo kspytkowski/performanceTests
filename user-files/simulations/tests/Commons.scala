@@ -5,7 +5,15 @@ import io.gatling.http.Predef._
 
 object Commons {
 
+  val MOODLE_URL = "http://192.168.2.1/moodle";
+
+  val numberOfUsers = 1;
+
   val successStatus: Int = 200
+
+  val LOGIN_CONTEXT_ID = "5";
+  val COURSE_CONTEXT_ID = "38"
+  val COURSE_QUIZ_CONTEXT_ID = "51"
 
   val headers1 = Map("Upgrade-Insecure-Requests" -> "1")
 
@@ -28,8 +36,24 @@ object Commons {
 
   val headers6 = Map("Upgrade-Insecure-Requests" -> "1")
 
+  val headersFirstQuestion = Map(
+		"Content-Type" -> "multipart/form-data; boundary=---------------------------23874327418345425662108952501",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headersSecondQuestion = Map(
+		"Content-Type" -> "multipart/form-data; boundary=---------------------------8995734713942129141733338246",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headersThirdQuestion = Map(
+		"Content-Type" -> "multipart/form-data; boundary=---------------------------4943517595834122041069809851",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headersFourthQuestion = Map(
+		"Content-Type" -> "multipart/form-data; boundary=---------------------------686099722714968618186152106",
+		"Upgrade-Insecure-Requests" -> "1")
+
   val httpProtocol = http
-    .baseURL("http://localhost:8080")
+    .baseURL(MOODLE_URL)
     .inferHtmlResources(BlackList(""".*\.js""", """.*\.css""", """.*\.gif""", """.*\.jpeg""", """.*\.jpg""", """.*\.ico""", """.*\.woff""", """.*\.(t|o)tf""", """.*\.png"""), WhiteList())
     .acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     .acceptEncodingHeader("gzip, deflate")
@@ -54,6 +78,97 @@ object Commons {
       .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
       .headers(headers2)
       .body(RawFileBody("RequestExtra2.txt"))))
+
+  def logIn(name: String, password: String) = {
+    exec(http("LogInUsingCredentials " + name + " " + password)
+    .post("/login/index.php")
+    .headers(headers1)
+    .check(regex(""","sesskey":"(..........)",""").saveAs("SESSKEY"))
+    .formParam("username", name)
+    .formParam("password", password)
+    .formParam("anchor", "")
+    .resources(http("SessionKeyPostRQ")
+      .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+      .headers(headers2)
+      .body(StringBody(generateStandardBody(LOGIN_CONTEXT_ID))))
+    )
+  }
+
+  def goToCoursePage(courseId: String) = {
+    exec(http("go to course page")
+			.get("/course/view.php?id=" + courseId)
+			.headers(headers1)
+			.resources(http("GoToCoursePagePostRQ")
+			.post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+			.headers(headers2)
+      .body(StringBody(generateStandardBody(COURSE_CONTEXT_ID)))
+			// .body(RawFileBody("CompleteQuizTest_0007_request.txt"))
+      )
+    )
+  }
+
+  def goToCourseQuiz(courseId: String) = {
+    exec(http("got to course quiz")
+			.get("/mod/quiz/view.php?id=" + courseId)
+			.headers(headers1)
+			.resources(http("GoToCourseQuizPostRQ")
+			.post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+			.headers(headers2)
+			.body(StringBody(generateStandardBody(COURSE_QUIZ_CONTEXT_ID))))
+    )
+  }
+
+  def generateStandardBody(contextId: String): String = {
+    "[{\"index\":0,\"methodname\":\"core_fetch_notifications\",\"args\":{\"contextid\":" + contextId +"}}]"
+  }
+
+  def startQuiz(quizId: String) = {
+    exec(http("Start quiz")
+			.post("/mod/quiz/startattempt.php")
+			.headers(headers1)
+			.formParam("cmid", quizId)
+			.formParam("sesskey", "${SESSKEY}")
+			.resources(http("StartQuizPostRQ")
+			.post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+			.headers(headers2)
+			.body(StringBody(generateStandardBody(COURSE_QUIZ_CONTEXT_ID)))))
+  }
+
+  def answerQuestion(answerFile: String, questionHeader: Map) = {
+    exec(http("AnswerQuestion")
+			.post("/mod/quiz/processattempt.php")
+			.headers(questionHeader)
+			.body(RawFileBody(answerFile))
+			.resources(http("AnswerQuestionPostRQ")
+			.post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+			.headers(headers2)
+			.body(StringBody(generateStandardBody(COURSE_QUIZ_CONTEXT_ID)))))
+  }
+
+  def endQuiz() = {
+    exec(http("EndQuiz")
+			.post("/mod/quiz/processattempt.php")
+			.headers(headers1)
+			.formParam("attempt", "2")
+			.formParam("finishattempt", "1")
+			.formParam("timeup", "0")
+			.formParam("slots", "")
+			.formParam("sesskey", "${SESSKEY}")
+			.resources(http("EndQuizPostRQ")
+			.post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+			.headers(headers2)
+			.body(StringBody(generateStandardBody(COURSE_QUIZ_CONTEXT_ID)))))
+  }
+
+  def submitQuiz(quizId: String) = {
+    exec(http("SubmitQuiz")
+			.get("/mod/quiz/view.php?id=" + quizId)
+			.headers(headers1)
+			.resources(http("SubmitQuizPostRQ")
+			.post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+			.headers(headers2)
+			.body(StringBody(generateStandardBody(COURSE_QUIZ_CONTEXT_ID)))))
+  }
 
   val logInPost = exec(http("LogInPostRQ")
     .post("/login/index.php")
@@ -297,5 +412,5 @@ object Commons {
     .formParam("tags", "_qf__force_multiselect_submission")
     .formParam("saveandreturn", "Save and return"))
 
-  val numberOfUsers = 1;
+
 }
