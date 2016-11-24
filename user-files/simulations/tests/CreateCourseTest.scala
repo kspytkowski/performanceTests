@@ -10,20 +10,20 @@ class CreateCourseTest extends Simulation {
 
   val scn = scenario("CreateCourseTest")
     .exec(
-      Commons.homePageGet,
+      Commons.homePageGet(),
       pause(2),
-      Commons.logInPageGet,
+      Commons.logInPageGet(),
       pause(2),
-      Commons.logInPost,
+      Commons.logIn(Commons.ADMIN_LOGIN, Commons.ADMIN_PASSWORD),
       pause(2),
-      Commons.coursePageGet,
+      Commons.coursePageGet(),
       pause(2),
-      Commons.addNewCoursePageGet,
+      Commons.addNewCoursePageGet(),
       pause(20),
-      Commons.createCoursePost,
+      Commons.createCoursePost(),
       pause(20),
-      Commons.logOutGetWithParameter
+      Commons.logOutGetWithParameter()
     )
 
-  setUp(scn.inject(atOnceUsers(Commons.numberOfUsers))).protocols(Commons.httpProtocol)
+  setUp(scn.inject(atOnceUsers(Commons.NUMBER_OF_USERS))).protocols(Commons.HTTP_PROTOCOL)
 }

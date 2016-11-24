@@ -9,20 +9,21 @@ import io.gatling.jdbc.Predef._
 class RandomClickTest extends Simulation {
 
   val scn = scenario("RandomClickTest")
+    .feed(csv("studentsData.csv"))
     .exec(
-      Commons.homePageGet,
+      Commons.homePageGet(),
       pause(2),
-      Commons.logInPageGet,
+      Commons.logInPageGet(),
       pause(2),
-      Commons.logInPost,
+      Commons.logIn("${username}", "${password}"),
       pause(2),
-      Commons.availableCoursesPageGet,
+      Commons.availableCoursesPageGet(),
 
       //add more
 
       pause(2),
-      Commons.logOutGetWithParameter
+      Commons.logOutGetWithParameter()
     )
 
-  setUp(scn.inject(atOnceUsers(Commons.numberOfUsers))).protocols(Commons.httpProtocol)
+  setUp(scn.inject(atOnceUsers(Commons.NUMBER_OF_USERS))).protocols(Commons.HTTP_PROTOCOL)
 }

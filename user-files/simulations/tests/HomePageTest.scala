@@ -7,8 +7,8 @@ class HomePageTest extends Simulation {
 
   val scn = scenario("HomePageTest")
     .exec(
-      Commons.homePageGet
+      Commons.homePageGet()
     )
 
-  setUp(scn.inject(atOnceUsers(Commons.numberOfUsers))).protocols(Commons.httpProtocol)
+  setUp(scn.inject(atOnceUsers(Commons.NUMBER_OF_USERS))).protocols(Commons.HTTP_PROTOCOL)
 }
