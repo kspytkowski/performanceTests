@@ -37,7 +37,7 @@ Content-Disposition: form-data; name="timeup"
 -----------------------------8995734713942129141733338246
 Content-Disposition: form-data; name="sesskey"
 
-$SESSION_TOKEN
+SESSION_TOKEN
 -----------------------------8995734713942129141733338246
 Content-Disposition: form-data; name="scrollpos"
 

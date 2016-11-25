@@ -116,21 +116,24 @@ object Commons {
   }
 
    def answerQuestion(answerFile: String, questionHeader: Map[String,String]) = {
-     var tmp = ""
-     exec(session => {
-       tmp = session("SESSKEY").as[String]
+    //  exec(session => {
+      //  tmp = session("SESSKEY").as[String]
       //  System.out.println(tmp)
-       session
-     })
-     .exec(http("AnswerQuestion")
- 			.post("/mod/quiz/processattempt.php")
+      //  session
+    //  })
+     exec(
+       http("AnswerQuestion")
+ 		// 	.post("/mod/quiz/processattempt.php")
+      .post("/mod/quiz/processattempt.php")
+      .formParam("sesskey", "${SESSKEY}")
  			.headers(questionHeader)
  		// 	.body(RawFileBody(answerFile))
-      .body(StringBody(readWholeFile("../user-files/bodies/"+answerFile).replaceAll("$SESSION_TOKEN",tmp)))
+      .body(StringBody(session => readWholeFile("../user-files/bodies/"+answerFile).replaceAll("SESSION_TOKEN",session("SESSKEY").as[String])))
  			.resources(http("AnswerQuestionPostRQ")
  			.post("/lib/ajax/service.php?sesskey=${SESSKEY}")
  			.headers(HEADERS_2)
- 			.body(StringBody(generateStandardBody(COURSE_QUIZ_CONTEXT_ID)))))
+ 			.body(StringBody(generateStandardBody(COURSE_QUIZ_CONTEXT_ID))))
+    )
    }
 
    def readWholeFile(file: String):String = {
