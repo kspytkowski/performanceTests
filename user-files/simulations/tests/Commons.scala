@@ -115,16 +115,27 @@ object Commons {
         .body(StringBody(generateStandardBody(COURSE_QUIZ_CONTEXT_ID)))))
   }
 
-//    def answerQuestion(answerFile: String, questionHeader: Map) = {
-//      exec(http("AnswerQuestion")
-//  			.post("/mod/quiz/processattempt.php")
-//  			.headers(questionHeader)
-//  			.body(RawFileBody(answerFile))
-//  			.resources(http("AnswerQuestionPostRQ")
-//  			.post("/lib/ajax/service.php?sesskey=${SESSKEY}")
-//  			.headers(HEADERS_2)
-//  			.body(StringBody(generateStandardBody(COURSE_QUIZ_CONTEXT_ID)))))
-//    }
+   def answerQuestion(answerFile: String, questionHeader: Map[String,String]) = {
+     var tmp = ""
+     exec(session => {
+       tmp = session("SESSKEY").as[String]
+      //  System.out.println(tmp)
+       session
+     })
+     .exec(http("AnswerQuestion")
+ 			.post("/mod/quiz/processattempt.php")
+ 			.headers(questionHeader)
+ 		// 	.body(RawFileBody(answerFile))
+      .body(StringBody(readWholeFile("../user-files/bodies/"+answerFile).replaceAll("$SESSION_TOKEN",tmp)))
+ 			.resources(http("AnswerQuestionPostRQ")
+ 			.post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+ 			.headers(HEADERS_2)
+ 			.body(StringBody(generateStandardBody(COURSE_QUIZ_CONTEXT_ID)))))
+   }
+
+   def readWholeFile(file: String):String = {
+     scala.io.Source.fromFile(file).mkString
+   }
 
   def endQuiz() = {
     exec(http("EndQuiz")
