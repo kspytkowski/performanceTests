@@ -8,7 +8,7 @@ object Commons {
   val MOODLE_URL = "http://192.168.2.1/moodle"
   val ADMIN_LOGIN = "admin"
   val ADMIN_PASSWORD = "moodle"
-  val NUMBER_OF_USERS = 1
+  val NUMBER_OF_USERS = 30
   val SESSION_CONTEXT_ID = "2"
   val SESSION_SECOND_CONTEXT_ID = "1"
   val SESSION_THIRD_CONTEXT_ID = "3"
@@ -83,7 +83,6 @@ object Commons {
         .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
         .headers(HEADERS_2)
         .body(StringBody(generateStandardBody(COURSE_CONTEXT_ID)))
-        // .body(RawFileBody("CompleteQuizTest_0007_request.txt"))
       )
     )
   }
@@ -107,6 +106,7 @@ object Commons {
     exec(http("Start quiz")
       .post("/mod/quiz/startattempt.php")
       .headers(HEADERS_1)
+      .check(currentLocationRegex("attempt=(.*)").saveAs("ATTEMPTID"))
       .formParam("cmid", quizId)
       .formParam("sesskey", "${SESSKEY}")
       .resources(http("StartQuizPostRQ")
@@ -116,35 +116,31 @@ object Commons {
   }
 
    def answerQuestion(answerFile: String, questionHeader: Map[String,String]) = {
-    //  exec(session => {
-      //  tmp = session("SESSKEY").as[String]
-      //  System.out.println(tmp)
-      //  session
-    //  })
      exec(
        http("AnswerQuestion")
-      // .post("/mod/quiz/processattempt.php?attempt=2&sesskey=${SESSKEY}")
       .post("/mod/quiz/processattempt.php")
       .formParam("sesskey", "${SESSKEY}")
  			.headers(questionHeader)
- 		// 	.body(RawFileBody(answerFile))
-      .body(StringBody(session => readWholeFile("../user-files/bodies/"+answerFile).replaceAll("SESSION_TOKEN",session("SESSKEY").as[String])))
+      .body(StringBody(session => processAnswerFile(answerFile, session)))
  			.resources(http("AnswerQuestionPostRQ")
- 			.post("/lib/ajax/service.php?sesskey=${SESSKEY}")
- 			.headers(HEADERS_2)
- 			.body(StringBody(generateStandardBody(COURSE_QUIZ_CONTEXT_ID))))
+ 			  .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+ 			  .headers(HEADERS_2)
+ 			  .body(StringBody(generateStandardBody(COURSE_QUIZ_CONTEXT_ID)))
+      )
     )
    }
 
-   def readWholeFile(file: String):String = {
-     scala.io.Source.fromFile(file).mkString
+   def processAnswerFile(file: String, session: Session) = {
+     scala.io.Source.fromFile("../user-files/bodies/"+file).mkString
+        .replaceAll("SESSION_TOKEN",session("SESSKEY").as[String])
+        .replaceAll("ATTEMPTID", session("ATTEMPTID").as[String])
    }
 
   def endQuiz() = {
     exec(http("EndQuiz")
       .post("/mod/quiz/processattempt.php")
       .headers(HEADERS_1)
-      .formParam("attempt", "2")
+      .formParam("attempt", "${ATTEMPTID}")
       .formParam("finishattempt", "1")
       .formParam("timeup", "0")
       .formParam("slots", "")
