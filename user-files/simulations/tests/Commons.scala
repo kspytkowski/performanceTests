@@ -61,7 +61,7 @@ object Commons {
   }
 
   def logIn(name: String, password: String) = {
-    exec(http("LogInUsingCredentials " + name + " " + password)
+    exec(http("LogInUsingCredentials")
       .post("/login/index.php")
       .headers(HEADERS_1)
       .check(regex(""","sesskey":"(..........)",""").saveAs("SESSKEY"))
@@ -162,7 +162,7 @@ object Commons {
   }
 
   def logInToManageCoursesPost(name: String, password: String) = {
-    exec(http("LogInToManageCoursesUsingCredentials " + name + " " + password)
+    exec(http("LogInToManageCoursesUsingCredentials")
       .post("/login/index.php")
       .headers(HEADERS_1)
       .check(regex(""","sesskey":"(..........)",""").saveAs("SESSKEY"))
