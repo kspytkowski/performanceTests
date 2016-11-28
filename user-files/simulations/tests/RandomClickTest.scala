@@ -18,12 +18,16 @@ class RandomClickTest extends Simulation {
       Commons.logIn("${username}", "${password}"),
       pause(2),
       Commons.availableCoursesPageGet(),
-
-      //add more
-
+      pause(2),
+      Commons.dashboardPageGet(),
+      pause(2),
+      Commons.gradesPageGet(),
+      pause(2),
+      Commons.preferencesPageGet(),
       pause(2),
       Commons.logOutGetWithParameter()
     )
 
   setUp(scn.inject(atOnceUsers(Commons.NUMBER_OF_USERS))).protocols(Commons.HTTP_PROTOCOL)
 }
+

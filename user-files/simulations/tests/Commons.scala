@@ -199,6 +199,32 @@ object Commons {
         .body(StringBody(generateStandardBody(SESSION_CONTEXT_ID)))))
   }
 
+  def dashboardPageGet() = {
+    exec(http("DashboardPageGetRQ")
+      .get("/my/")
+      .headers(HEADERS_3)
+      .resources(http("SessionKeyPostRQ")
+        .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+        .headers(HEADERS_2)
+        .body(StringBody(generateStandardBody(SESSION_CONTEXT_ID)))))
+  }
+
+  def gradesPageGet() = {
+    exec(http("GradesPageGetRQ")
+      .get("/grade/report/overview/index.php")
+      .headers(HEADERS_3)
+      .resources(http("SessionKeyPostRQ")
+        .post("/lib/ajax/service.php?sesskey=${SESSKEY}")
+        .headers(HEADERS_2)
+        .body(StringBody(generateStandardBody(SESSION_CONTEXT_ID)))))
+  }
+
+  def preferencesPageGet() = {
+    exec(http("PreferencesPageGetRQ")
+      .get("/user/preferences.php")
+      .headers(HEADERS_1))
+  }
+
   def filterSettingsPageGet() = {
     exec(http("FilterSettingsPageGetRQ")
       .get("/filter/manage.php?contextid=2")
