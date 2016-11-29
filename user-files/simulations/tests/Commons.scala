@@ -340,7 +340,7 @@ object Commons {
     exec(http("ManagementPageGetRQ")
       .get("/course/management.php")
       .headers(HEADERS_3)
-      .check(regex("""title="${COURSE_NAME}" href=""" + MOODLE_URL + """/course/view.php\?id=(.*)">${COURSE_NAME}""").saveAs("COURSE_ID"))
+      .check(regex("""title="${COURSE_NAME}" href="""" + MOODLE_URL + """/course/view.php\?id=(.*)">${COURSE_NAME}""").saveAs("COURSE_ID"))
       //${COURSE_NAME} is a session key which was used for creation of this course
       //${COURSE_ID} is an interior moodle database course id (different than course id assigned by used while creating a course)
       .resources(http("SessionKeyPostRQ")
