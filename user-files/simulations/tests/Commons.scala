@@ -8,7 +8,8 @@ object Commons {
   val MOODLE_URL = "http://192.168.2.1/moodle"
   val ADMIN_LOGIN = "admin"
   val ADMIN_PASSWORD = "moodle"
-  val NUMBER_OF_USERS = 1
+  val NUMBER_OF_USERS = 20
+  val USERS_STRATEGY = atOnceUsers(NUMBER_OF_USERS)
   val SESSION_CONTEXT_ID = "2"
   val SESSION_SECOND_CONTEXT_ID = "1"
   val SESSION_THIRD_CONTEXT_ID = "3"

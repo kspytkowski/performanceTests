@@ -17,5 +17,5 @@ class LogInLogOutTest extends Simulation {
       Commons.logOutGetWithParameter()
     )
 
-  setUp(scn.inject(atOnceUsers(Commons.NUMBER_OF_USERS))).protocols(Commons.HTTP_PROTOCOL)
+  setUp(scn.inject(Commons.USERS_STRATEGY)).protocols(Commons.HTTP_PROTOCOL)
 }
